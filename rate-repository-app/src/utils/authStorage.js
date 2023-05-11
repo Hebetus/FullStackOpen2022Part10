@@ -9,8 +9,7 @@ class AuthStorage {
         const accessToken = await AsyncStorage.getItem(
             `${this.namespace}:token`,
         );
-        
-        console.log('token retrieved!')
+        console.log('token retrieved!', accessToken)
         return accessToken;
     }
 
@@ -19,7 +18,7 @@ class AuthStorage {
             `${this.namespace}:token`,
             accessToken,
         );
-        console.log('token saved!');
+        console.log('token saved!', accessToken);
     }
 
     async removeAccessToken() {

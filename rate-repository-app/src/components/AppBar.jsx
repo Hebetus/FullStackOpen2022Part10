@@ -1,6 +1,6 @@
 import { View, StyleSheet, Pressable, Text, ScrollView } from 'react-native';
 import { Link } from 'react-router-native';
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import Constants from 'expo-constants';
 import { useQuery, useApolloClient } from '@apollo/client';
 
@@ -32,7 +32,8 @@ const styles = StyleSheet.create({
 })
 
 const AppBar = () => {
-    const { loading, error, data } = useQuery(CHECK_AUTHORIZATION);
+    const { loading, error, data, refetch } = useQuery(CHECK_AUTHORIZATION);
+    const [loginStatus, setLoginStatus] = useState(false);
 
     const authStorage = useContext(AuthStorageContext);
     const apolloClient = useApolloClient();
@@ -40,9 +41,23 @@ const AppBar = () => {
     const onSignOut = () => {
         authStorage.removeAccessToken();
         apolloClient.resetStore();
+        setLoginStatus(false);
+        console.log('changed', loginStatus)
     };
 
-    console.log(data.me);
+    useEffect(() => {
+        if (data) {
+            if (data.me) {
+                setLoginStatus(true);
+            }
+        }
+    }, [authStorage.getAccessToken()]);
+    
+    useEffect(() => {
+        if (authStorage.getAccessToken()._A) {
+            setLoginStatus(true);
+        }
+    }, [authStorage.getAccessToken()]);
 
     return (
         <View style={styles.flexContainer}>
@@ -52,7 +67,19 @@ const AppBar = () => {
                         <Text style={styles.appbar}>Repositories</Text>
                     </Link>
                 </Pressable>
-                {data.me ?
+                <Pressable onPress={() => console.log('button pressed')}>
+                    <Link to="/newReview">
+                        <Text style={styles.appbar}>Create a review</Text>
+                    </Link>
+                </Pressable>
+                {loginStatus ?
+                    <Link to="/myreviews">
+                        <Text style={styles.appbar}>My reviews</Text>
+                    </Link>
+                    :
+                    null
+                }
+                {loginStatus ?
                     <Pressable onPress={onSignOut}>
                         <Text style={styles.appbar}>Sign out</Text>
                     </Pressable>
@@ -60,6 +87,15 @@ const AppBar = () => {
                     <Link to="/signin">
                         <Text style={styles.appbar}>Sign in</Text>
                     </Link>
+                }
+                {loginStatus ?
+                    null
+                    :
+                    <Pressable onPress={() => console.log('button pressed')}>
+                        <Link to="/signup">
+                            <Text style={styles.appbar}>Sign Up</Text>
+                        </Link>
+                    </Pressable>
                 }
             </ScrollView>
         </View>

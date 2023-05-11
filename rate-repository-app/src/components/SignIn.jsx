@@ -60,10 +60,10 @@ const SignIn = () => {
 
         try {
             await signIn({ username, password });
+            navigate('/');
         } catch (e) {
             console.log(e);
         }
-        navigate('/');
     };
 
     return (

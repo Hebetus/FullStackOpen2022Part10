@@ -3,9 +3,16 @@ import { useQuery } from '@apollo/client';
 
 import { GET_REPOSITORIES } from '../graphql/queries';
 
-const useRepositories = () => {
+const useRepositories = (orderBy, orderDirection, searchKeyword) => {
     const [repositories, setRepositories] = useState();
-    const { data, error, loading, refetch } = useQuery(GET_REPOSITORIES);
+
+    const { data, error, loading, refetch } = useQuery(GET_REPOSITORIES, {
+        variables: {
+            orderBy: orderBy,
+            orderDirection: orderDirection,
+            searchKeyword: searchKeyword,
+        },
+    });
 
     useEffect(() => {
         if (data) {
